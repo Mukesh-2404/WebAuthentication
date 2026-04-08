@@ -1,0 +1,11 @@
+{
+  "name": "webauthn-demo",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "9.0.3",
+    "express": "^4.19.2"
+  }
+}
