@@ -60,6 +60,68 @@ const base64urlToBuffer = str => {
       }
     }
 
+    async function deleteUser() {
+      const username = document.getElementById('username').value.trim();
+      if (!username) return setStatus('Enter username', true);
+
+      if (!confirm("Authenticate to delete your account")) return;
+
+      try {
+        setStatus('Verifying passkey for deletion...');
+
+        // STEP 1: Start authentication
+        const res = await fetch('/delete/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+
+        const options = await res.json();
+
+        options.challenge = base64urlToBuffer(options.challenge);
+        if (options.allowCredentials) {
+          options.allowCredentials = options.allowCredentials.map(c => ({
+            ...c,
+            id: base64urlToBuffer(c.id)
+          }));
+        }
+
+        // STEP 2: Ask for passkey
+        const assertion = await navigator.credentials.get({ publicKey: options });
+
+        const verification = {
+          id: assertion.id,
+          rawId: bufferToBase64url(assertion.rawId),
+          type: assertion.type,
+          response: {
+            authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+            clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+            signature: bufferToBase64url(assertion.response.signature),
+            userHandle: assertion.response.userHandle
+              ? bufferToBase64url(assertion.response.userHandle)
+              : undefined,
+          },
+        };
+
+        // STEP 3: Send for verification + deletion
+        const verifyRes = await fetch('/delete/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, credential: verification })
+        });
+
+        const result = await verifyRes.json();
+
+        setStatus(
+          result.success ? '🗑️ User deleted securely!' : result.error,
+          !result.success
+        );
+
+      } catch (err) {
+        setStatus(`Error: ${err.message}`, true);
+      }
+    }
+
     async function login() {
       const username = document.getElementById('username').value.trim();
       if (!username) return setStatus('Enter username', true);

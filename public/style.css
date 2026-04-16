@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  background: linear-gradient(135deg, #093380, #3e7be6);
   display: flex;
   height: 100vh;
   justify-content: center;
@@ -41,13 +41,23 @@ button:first-child {
   background: #28a745;
   color: white;
 }
-
-button:last-child {
+button:nth-child(2) {
   background: #007bff;
   color: white;
 }
 
+button:last-child {
+  background: #a51515;
+  color: white;
+}
+
 #status {
+  font-weight: bold;
   margin-top: 15px;
+}
+.success {
+  color: green;
+}
+.error {
   color: red;
 }
