@@ -10,12 +10,12 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 const USERS = {}; // { username: { credentials: [...] } }
 const CHALLENGES = {};
 
-const rpID = 'localhost';
-const expectedOrigin = 'http://localhost:4000';
+const rpID = 'Webauthentication.onrender.com';
+const expectedOrigin = 'https://Webauthentication.onrender.com';
 
 app.post('/register/start', async (req, res) => {
   const { username } = req.body;
